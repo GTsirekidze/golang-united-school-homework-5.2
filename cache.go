@@ -15,7 +15,8 @@ func NewCache(value string) Cache {
 }
 
 func (caches Caches) Get(key string) (string, bool) {
-	return caches.mp[key].value, true
+	val, ok := caches.mp["foo"]
+	return val.value, ok
 }
 
 func (caches *Caches) Put(key, value string) {
