@@ -4,23 +4,24 @@ import "time"
 
 type Cache struct {
 	value string
+	key   string
 }
 
 type Caches struct {
 	mp map[string]Cache
 }
 
-func NewCache(value string) Cache {
-	return Cache{value}
+func NewCache(key, value string) Cache {
+	return Cache{key, value}
 }
 
 func (caches Caches) Get(key string) (string, bool) {
-	val, ok := caches.mp["foo"]
+	val, ok := caches.mp[key]
 	return val.value, ok
 }
 
 func (caches *Caches) Put(key, value string) {
-	caches.mp[key] = Cache{value}
+	caches.mp[key] = Cache{key, value}
 }
 
 func (caches Caches) Keys() []string {
@@ -33,7 +34,7 @@ func (caches Caches) Keys() []string {
 }
 
 func (caches *Caches) PutTill(key, value string, deadline time.Time) {
-	caches.mp[key] = Cache{value}
+	caches.mp[key] = Cache{key, value}
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
 	end := deadline.UnixNano() / int64(time.Millisecond)
