@@ -5,25 +5,39 @@ import (
 )
 
 type Cache struct {
-	mp map[string]string
+	mp map[string]localCache
+}
+
+type localCache struct {
+	value       string
+	deadline    time.Time
+	isPermanent bool
 }
 
 func NewCache() Cache {
-	return Cache{make(map[string]string)}
+	return Cache{make(map[string]localCache)}
 }
 
-func (caches Cache) Get(key string) (string, bool) {
+func (caches *Cache) cleenUp(key string) {
+	if !caches.mp[key].isPermanent || caches.mp[key].deadline.After(time.Now()) {
+		delete(caches.mp, key)
+	}
+}
+
+func (caches *Cache) Get(key string) (string, bool) {
+	caches.cleenUp(key)
 	val, ok := caches.mp[key]
-	return val, ok
+	return val.value, ok
 }
 
 func (caches *Cache) Put(key, value string) {
-	caches.mp[key] = value
+	caches.mp[key] = localCache{value, time.Now(), true}
 }
 
 func (caches Cache) Keys() []string {
 	var ans []string
 	for k, _ := range caches.mp {
+		caches.cleenUp(k)
 		ans = append(ans, k)
 	}
 
@@ -31,11 +45,5 @@ func (caches Cache) Keys() []string {
 }
 
 func (caches *Cache) PutTill(key, value string, deadline time.Time) {
-	caches.mp[key] = value
-
-	start := time.Now().UnixNano() / int64(time.Millisecond)
-	end := deadline.UnixNano() / int64(time.Millisecond)
-	time.Sleep(time.Duration(end - start))
-
-	delete(caches.mp, key)
+	caches.mp[key] = localCache{value, deadline, false}
 }
