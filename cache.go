@@ -1,13 +1,15 @@
 package cache
 
-import "time"
+import (
+	"time"
+)
 
 type Cache struct {
 	mp map[string]string
 }
 
 func NewCache() Cache {
-	return Cache{}
+	return Cache{make(map[string]string)}
 }
 
 func (caches Cache) Get(key string) (string, bool) {
