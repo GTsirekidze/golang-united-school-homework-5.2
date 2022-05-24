@@ -3,27 +3,23 @@ package cache
 import "time"
 
 type Cache struct {
-	value string
+	mp map[string]string
 }
 
-type Caches struct {
-	mp map[string]Cache
+func NewCache() Cache {
+	return Cache{}
 }
 
-func NewCache(value string) Cache {
-	return Cache{value}
-}
-
-func (caches Caches) Get(key string) (string, bool) {
+func (caches Cache) Get(key string) (string, bool) {
 	val, ok := caches.mp[key]
-	return val.value, ok
+	return val, ok
 }
 
-func (caches *Caches) Put(key, value string) {
-	caches.mp[key] = Cache{value}
+func (caches *Cache) Put(key, value string) {
+	caches.mp[key] = value
 }
 
-func (caches Caches) Keys() []string {
+func (caches Cache) Keys() []string {
 	var ans []string
 	for k, _ := range caches.mp {
 		ans = append(ans, k)
@@ -32,8 +28,8 @@ func (caches Caches) Keys() []string {
 	return ans
 }
 
-func (caches *Caches) PutTill(key, value string, deadline time.Time) {
-	caches.mp[key] = Cache{value}
+func (caches *Cache) PutTill(key, value string, deadline time.Time) {
+	caches.mp[key] = value
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
 	end := deadline.UnixNano() / int64(time.Millisecond)
