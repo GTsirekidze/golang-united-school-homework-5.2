@@ -19,7 +19,7 @@ func NewCache() Cache {
 }
 
 func (caches *Cache) cleenUp(key string) {
-	if !caches.mp[key].isPermanent || caches.mp[key].deadline.Before(time.Now()) {
+	if !caches.mp[key].isPermanent && caches.mp[key].deadline.Before(time.Now()) {
 		delete(caches.mp, key)
 	}
 }
